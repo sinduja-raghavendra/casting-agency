@@ -34,16 +34,140 @@ def create_app(test_config=None):
     @app.route('/actors', methods=['GET'])
     def get_actors():
         actors = Actor.query.all()
-
         if not actors:
             abort(404)
-
         return jsonify({
             'success': True,
             'actors': [actor.format() for actor in actors]
         }), 200
 
+    # GET all movies
+    @app.route('/movies', methods=['GET'])
+    def get_movies():
+        movies = Movie.query.all()
+        if not movies:
+            abort(404)
+        return jsonify({
+            'success': True,
+            'movies': [movie.format() for movie in movies]
+        }), 200
     
+    # Add new Actor record
+    @app.route('/actors', methods=['POST'])
+    # @requires_auth('post:actors')
+    def add_actor():
+        body = request.get_json()
+        if body is None:
+            abort(400)
+        name = body.get('name') or None
+        age = body.get('age') or None
+        gender = body.get('gender') or None
+        if ((name is None) or (age is None) or (gender is None)):
+            abort(400)
+        actor = Actor(name=name, age=age, gender=gender)
+        try:
+            actor.insert()
+        except Exception as e:
+            abort(422)
+        return jsonify({
+            'success': True,
+            'actor': actor.format()
+        }), 200
+
+    # Add new Movie record
+    @app.route('/movies', methods=['POST'])
+    # @requires_auth('post:movies')
+    def add_movie():
+        body = request.get_json()
+        if body is None:
+            abort(400)
+        title = body.get('title') or None
+        release = body.get('release') or None
+        if ((title is None) or (release is None)):
+            abort(400)
+        movie = Movie(title=title, release=release)
+        try:
+            movie.insert()
+        except Exception as e:
+            abort(422)
+        return jsonify({
+            'success': True,
+            'actor': movie.format()
+        }), 200
+
+    # Update an actor record
+    @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+    # @requires_auth('patch:actors')
+    def update_actor(actor_id):
+        if not actor_id:
+            abort(404)
+        actor = Actor.query.get(actor_id)
+        if not actor:
+            abort(404)
+        body = request.get_json()
+        if body is None:
+            abort(400)
+        if 'name' in body and body['name']:
+            actor.name = body['name']
+        if 'age' in body and body['age']:
+            actor.age = body['age']
+        if 'gender' in body and body['gender']:
+            actor.gender = body['gender']
+        actor.update()
+        return jsonify({
+            'success': True,
+            'actor': actor.format(),
+        }), 200
+
+    # Update a movie record
+    @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+    # @requires_auth('patch:movies')
+    def update_movie(movie_id):
+        if not movie_id:
+            abort(404)
+        movie = Movie.query.get(movie_id)
+        if not movie:
+            abort(404)
+        body = request.get_json()
+        if 'title' in body and body['title']:
+            movie.title = body['title']
+        if 'release' in body and body['release']:
+            movie.release = body['release']
+        movie.update()
+        return jsonify({
+            'success': True,
+            'movie': movie.format(),
+        }), 200
+
+    # DELETE actor record
+    @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+    # @requires_auth('delete:actors')
+    def delete_actor(actor_id):
+        if not actor_id:
+            abort(404)
+        actor = Actor.query.get(actor_id)
+        if not actor:
+            abort(404)
+        actor.delete()
+        return jsonify({
+            'success': True,
+            'actor_id': actor_id
+        }), 200
+
+    # DELETE movie record
+    @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+    # @requires_auth('delete:movies')
+    def delete_movie(movie_id):
+        if not movie_id:
+            abort(404)
+        movie = Movie.query.get(movie_id)
+        if not movie:
+            abort(404)
+        movie.delete()
+        return jsonify({
+            'success': True,
+            'movie_id': movie_id
+        }), 200
 
     # Error Handling
     @app.errorhandler(422)
@@ -63,7 +187,7 @@ def create_app(test_config=None):
         }), 404
 
     @app.errorhandler(400)
-    def resource_not_found(error):
+    def bad_request(error):
         return jsonify({
             "success": False,
             "error": 400,
