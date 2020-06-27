@@ -10,11 +10,15 @@ from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from .database.models import Actor, Movie, setup_db
 from .auth.auth import *
+ROWS_PER_PAGE = 10
 
-# ---------------------------------------------------------
-# Config
-# ---------------------------------------------------------
 
+def paginate_results(request, selection):
+        page = request.args.get('page', 1, type=int)
+        start =  (page - 1) * ROWS_PER_PAGE
+        end = start + ROWS_PER_PAGE
+        objects_formatted = [object_name.format() for object_name in selection]
+        return objects_formatted[start:end]
 
 def create_app(test_config=None):
   # create and configure the app
@@ -25,37 +29,45 @@ def create_app(test_config=None):
     # CORS Headers 
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
 
+    @app.route('/')
+    def welcome():
+        msg = 'Welcome to the Casting Agency'
+        return jsonify(msg)
 
     # GET all Actors
     @app.route('/actors', methods=['GET'])
-    def get_actors():
+    @requires_auth('get:actors')
+    def get_actors(payload):
         actors = Actor.query.all()
         if not actors:
             abort(404)
+        actors_paginated = paginate_results(request, actors)
         return jsonify({
             'success': True,
-            'actors': [actor.format() for actor in actors]
+            'actors': actors_paginated
         }), 200
 
     # GET all movies
     @app.route('/movies', methods=['GET'])
-    def get_movies():
+    @requires_auth('get:movies')
+    def get_movies(payload):
         movies = Movie.query.all()
         if not movies:
             abort(404)
+        movies_paginated = paginate_results(request, movies)
         return jsonify({
             'success': True,
-            'movies': [movie.format() for movie in movies]
+            'movies': movies_paginated
         }), 200
     
     # Add new Actor record
     @app.route('/actors', methods=['POST'])
-    # @requires_auth('post:actors')
-    def add_actor():
+    @requires_auth('post:actors')
+    def add_actor(payload):
         body = request.get_json()
         if body is None:
             abort(400)
@@ -76,8 +88,8 @@ def create_app(test_config=None):
 
     # Add new Movie record
     @app.route('/movies', methods=['POST'])
-    # @requires_auth('post:movies')
-    def add_movie():
+    @requires_auth('post:movies')
+    def add_movie(payload):
         body = request.get_json()
         if body is None:
             abort(400)
@@ -97,8 +109,8 @@ def create_app(test_config=None):
 
     # Update an actor record
     @app.route('/actors/<int:actor_id>', methods=['PATCH'])
-    # @requires_auth('patch:actors')
-    def update_actor(actor_id):
+    @requires_auth('patch:actors')
+    def update_actor(payload, actor_id):
         if not actor_id:
             abort(404)
         actor = Actor.query.get(actor_id)
@@ -121,8 +133,8 @@ def create_app(test_config=None):
 
     # Update a movie record
     @app.route('/movies/<int:movie_id>', methods=['PATCH'])
-    # @requires_auth('patch:movies')
-    def update_movie(movie_id):
+    @requires_auth('patch:movies')
+    def update_movie(payload, movie_id):
         if not movie_id:
             abort(404)
         movie = Movie.query.get(movie_id)
@@ -141,8 +153,8 @@ def create_app(test_config=None):
 
     # DELETE actor record
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
-    # @requires_auth('delete:actors')
-    def delete_actor(actor_id):
+    @requires_auth('delete:actors')
+    def delete_actor(payload, actor_id):
         if not actor_id:
             abort(404)
         actor = Actor.query.get(actor_id)
@@ -156,8 +168,8 @@ def create_app(test_config=None):
 
     # DELETE movie record
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
-    # @requires_auth('delete:movies')
-    def delete_movie(movie_id):
+    @requires_auth('delete:movies')
+    def delete_movie(payload, movie_id):
         if not movie_id:
             abort(404)
         movie = Movie.query.get(movie_id)
