@@ -4,12 +4,12 @@
 
 import click
 import json
-import os
+import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import unittest
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
-from .database.models import Actor, Movie, setup_db
-from .auth.auth import *
+from database.models import Actor, Movie, setup_db
+from auth.auth import *
 ROWS_PER_PAGE = 10
 
 
