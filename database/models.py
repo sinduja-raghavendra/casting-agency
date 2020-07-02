@@ -11,10 +11,10 @@ from flask_moment import Moment
 # App Config.
 # ---------------------------------------------------------
 
-database_path = os.environ.get('DATABASE_URL')
+database_path = os.environ.get('SQLALCHEMY_DATABASE_URI')
 if not database_path:
     database_name = "agency"
-    database_path = "postgres://{}/{}".format('localhost:5432', database_name)
+    database_path = "postgresql://agency@localhost:5432/agency"
 
 db = SQLAlchemy()
 moment = Moment()
