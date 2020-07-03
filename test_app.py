@@ -22,7 +22,7 @@ class CapstoneTest(unittest.TestCase):
         self.token_producer = os.environ['producer_token']
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_path = "postgresql://agency@localhost:5432/agency"
+        self.database_path = "postgresql://agency@localhost:5432/agency_test"
         setup_db(self.app, self.database_path)
 
         with self.app.app_context():
@@ -191,8 +191,9 @@ class CapstoneTest(unittest.TestCase):
         self.assertEqual(body['success'], False)
 
     def test_update_Movies(self):
+        movie = Movie.query.first()
         res = self.client().patch(
-            '/movies/2',
+            '/movies/'+ str(movie.id),
             json={
                 "title": "Title"+random_key(5),
                 "release": "2010"},
@@ -227,8 +228,9 @@ class CapstoneTest(unittest.TestCase):
         self.assertEqual(body['success'], False)
 
     def test_update_Actors(self):
+        actor = Actor.query.first()
         res = self.client().patch(
-            '/actors/3',
+            '/actors/'+ str(actor.id),
             json={
                 "name": "Actor"+random_key(5),
                 "age": "10",

@@ -29,7 +29,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE IF NOT EXISTS public."Actors" (
-    id integer NOT NULL,
+    id integer NULL,
     name character varying,
     age character varying,
     gender character varying
@@ -42,21 +42,21 @@ ALTER TABLE public."Actors" OWNER TO agency;
 -- Name: Actors_id_seq; Type: SEQUENCE; Schema: public; Owner: agency
 --
 
-CREATE SEQUENCE public."Actors_id_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+-- CREATE SEQUENCE public."Actors_id_seq"
+--     START WITH 1
+--     INCREMENT BY 1
+--     NO MINVALUE
+--     NO MAXVALUE
+--     CACHE 1;
 
 
-ALTER TABLE public."Actors_id_seq" OWNER TO agency;
+-- ALTER TABLE public."Actors_id_seq" OWNER TO agency;
 
 --
 -- Name: Actors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: agency
 --
 
-ALTER SEQUENCE public."Actors_id_seq" OWNED BY public."Actors".id;
+-- ALTER SEQUENCE public."Actors_id_seq" OWNED BY public."Actors".id;
 
 
 --
@@ -64,7 +64,7 @@ ALTER SEQUENCE public."Actors_id_seq" OWNED BY public."Actors".id;
 --
 
 CREATE TABLE IF NOT EXISTS public."Movies" (
-    id integer NOT NULL,
+    id integer NULL,
     title character varying,
     release character varying
 );
@@ -72,25 +72,25 @@ CREATE TABLE IF NOT EXISTS public."Movies" (
 
 ALTER TABLE public."Movies" OWNER TO agency;
 
---
--- Name: Movies_id_seq; Type: SEQUENCE; Schema: public; Owner: agency
---
+-- --
+-- -- Name: Movies_id_seq; Type: SEQUENCE; Schema: public; Owner: agency
+-- --
 
-CREATE SEQUENCE public."Movies_id_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+-- CREATE SEQUENCE public."Movies_id_seq"
+--     START WITH 1
+--     INCREMENT BY 1
+--     NO MINVALUE
+--     NO MAXVALUE
+--     CACHE 1;
 
 
-ALTER TABLE public."Movies_id_seq" OWNER TO agency;
+-- ALTER TABLE public."Movies_id_seq" OWNER TO agency;
 
 --
 -- Name: Movies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: agency
 --
 
-ALTER SEQUENCE public."Movies_id_seq" OWNED BY public."Movies".id;
+-- ALTER SEQUENCE public."Movies_id_seq" OWNED BY public."Movies".id;
 
 --
 -- Data for Name: Actors; Type: TABLE DATA; Schema: public; Owner: agency

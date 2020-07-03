@@ -32,7 +32,7 @@ def setup_db(app, database_path=database_path):
 class Actor(db.Model):
     __tablename__ = 'Actors'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=True)
     name = db.Column(db.String, nullable=False)
     age = db.Column(db.String, nullable=False)
     gender = db.Column(db.String, nullable=False)
@@ -67,7 +67,7 @@ class Actor(db.Model):
 class Movie(db.Model):
     __tablename__ = 'Movies'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True,  nullable=True)
     title = db.Column(db.String, nullable=False)
     release = db.Column(db.String, nullable=False)
 
